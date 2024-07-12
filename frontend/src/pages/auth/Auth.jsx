@@ -4,13 +4,17 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import apiClient from '@/lib/api';
+import { setError, setLoading, setUserInfo } from '@/Redux/Slices/authSlice';
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from '@/utils/constant';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,18 +37,25 @@ const Auth = () => {
 
   const signupHandler = async () => {
     if (validateSignup()) {
-      const response = await apiClient.post(
-        SIGNUP_ROUTE,
-        { email, password },
-        { withCredentials: true }
-      );
+      dispatch(setLoading(true));
+      try {
+        const response = await apiClient.post(
+          SIGNUP_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
 
-      if (response) {
-        toast.success(response.data.message);
-        navigate('/profile');
+        if (response) {
+          toast.success(response.data.message);
+          dispatch(setUserInfo(response.data.user));
+          navigate('/profile');
+        }
+      } catch (error) {
+        toast.error('Signup failed');
+        dispatch(setError(error.message));
+      } finally {
+        dispatch(setLoading(false));
       }
-
-      console.log('User ', response.data.user);
     }
   };
 
@@ -63,29 +74,36 @@ const Auth = () => {
 
   const loginHandler = async () => {
     if (validateLogin()) {
-      const response = await apiClient.post(
-        LOGIN_ROUTE,
-        { email, password },
-        { withCredentials: true }
-      );
-      if (response) {
-        toast.success(response.data.message);
-        if (response.data.user.profileSetup) {
-          navigate('/chat');
-        } else {
-          navigate('/profile');
+      dispatch(setLoading(true));
+      try {
+        const response = await apiClient.post(
+          LOGIN_ROUTE,
+          { email, password },
+          { withCredentials: true }
+        );
+        if (response) {
+          toast.success(response.data.message);
+          dispatch(setUserInfo(response.data.user));
+          if (response.data.user.profileSetup) {
+            navigate('/chat');
+          } else {
+            navigate('/profile');
+          }
         }
+      } catch (error) {
+        toast.error('Login failed');
+        dispatch(setError(error.message));
+      } finally {
+        dispatch(setLoading(false));
       }
-
-      console.log('Response ', response.data.user);
     }
   };
 
   return (
-    <div className=" h-[100vh] w-[100vw] flex items-center justify-center">
+    <div className="h-[100vh] w-[100vw] flex items-center justify-center">
       <div className="h-[90vh] w-[80vw] bg-white border-2 border-white text-opacity-95 shadow-2xl md:w-[90vw] lg:w-[70vw] xl:w-[60vw] rounded-3xl grid xl:grid-cols-2">
         <div className="flex flex-col gap-10 items-center justify-center">
-          <div className="flex flex-col items-center justify-center xl:pl-3 ">
+          <div className="flex flex-col items-center justify-center xl:pl-3">
             <div className="flex items-center justify-center">
               <h1 className="text-5xl font-bold md:text-6xl">Welcome</h1>
               <img src={Victory} alt="Victory-Emoji" className="h-[100px]" />
@@ -97,7 +115,7 @@ const Auth = () => {
 
           <div className="w-full flex justify-center items-start">
             <Tabs className="w-3/4" defaultValue="signup">
-              <TabsList className=" bg-transparent rounded-none w-full">
+              <TabsList className="bg-transparent rounded-none w-full">
                 <TabsTrigger
                   className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-b-purple-500 p-3 transition-all duration-300"
                   value="login"
@@ -113,7 +131,7 @@ const Auth = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="login" className=" flex flex-col gap-5 mt-6">
+              <TabsContent value="login" className="flex flex-col gap-5 mt-6">
                 <Input
                   placeholder="Email"
                   type="email"
@@ -129,12 +147,16 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button className="rounded-full p-6" onClick={loginHandler}>
+                <Button
+                  className="rounded-full p-6"
+                  onClick={loginHandler}
+                  disabled={loading}
+                >
                   Login
                 </Button>
               </TabsContent>
 
-              <TabsContent value="signup" className=" flex flex-col gap-5">
+              <TabsContent value="signup" className="flex flex-col gap-5">
                 <Input
                   placeholder="Email"
                   type="email"
@@ -157,7 +179,11 @@ const Auth = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <Button className=" rounded-full p-6 " onClick={signupHandler}>
+                <Button
+                  className="rounded-full p-6"
+                  onClick={signupHandler}
+                  disabled={loading}
+                >
                   Signup
                 </Button>
               </TabsContent>
@@ -165,7 +191,7 @@ const Auth = () => {
           </div>
         </div>
 
-        <div className="hidden  xl:flex justify-center items-center">
+        <div className="hidden xl:flex justify-center items-center">
           <img src={Background} alt="Login-Background" className="h-[500px]" />
         </div>
       </div>
