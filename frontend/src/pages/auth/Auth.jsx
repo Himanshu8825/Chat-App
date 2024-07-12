@@ -48,6 +48,7 @@ const Auth = () => {
         if (response) {
           toast.success(response.data.message);
           dispatch(setUserInfo(response.data.user));
+
           navigate('/profile');
         }
       } catch (error) {

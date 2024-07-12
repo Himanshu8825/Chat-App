@@ -81,5 +81,21 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUserInfo = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ user: user });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
 //!Exporting Controllers
-module.exports = { signupUser, loginUser };
+module.exports = { signupUser, loginUser, getUserInfo };
