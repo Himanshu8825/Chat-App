@@ -8,13 +8,17 @@ import { GET_USER_INFO } from './utils/constant';
 
 const PrivateRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const isAuthenticated = Boolean(userInfo);
+  // console.log("userInfo", userInfo);
+  const isAuthenticated = !!userInfo;
+  // console.log("isAuthenticated", isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
 const AuthRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const isAuthenticated = Boolean(userInfo);
+  // console.log("AuthRoute userInfo", userInfo);
+  const isAuthenticated = !!userInfo;
+  // console.log("Auth Route isAuthenticated", isAuthenticated);
   return isAuthenticated ? <Navigate to="/chat" /> : children;
 };
 
@@ -32,20 +36,22 @@ const App = () => {
         });
 
         if (response.status === 200 && response.data.user) {
-          dispatch(setUserInfo(response.data.user));
+          dispatch(setUserInfo(response.data.user)); // Update Redux state with user info upon successful retrieval
         } else {
           dispatch(setUserInfo(undefined));
         }
       } catch (error) {
-        dispatch(setUserInfo(undefined));
         console.error('Error fetching user data:', error);
+        dispatch(setUserInfo(undefined));
       } finally {
         dispatch(setLoading(false));
       }
     };
 
     if (!userInfo) {
+      // console.log("Data nhi hai")
       getUserData();
+      // console.log("Data Aa gya")
     } else {
       dispatch(setLoading(false));
     }
@@ -66,14 +72,6 @@ const App = () => {
         }
       />
       <Route
-        path="/profile"
-        element={
-          <PrivateRoute>
-            <Profile />
-          </PrivateRoute>
-        }
-      />
-      <Route
         path="/chat"
         element={
           <PrivateRoute>
@@ -81,7 +79,16 @@ const App = () => {
           </PrivateRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/auth" />} />
+      <Route
+        path="/profile"
+        element={
+          // <PrivateRoute>
+            <Profile />
+          // </PrivateRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/auth" />} />{' '}
+      {/* Default to auth page for undefined routes */}
     </Routes>
   );
 };

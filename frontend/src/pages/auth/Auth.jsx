@@ -83,12 +83,15 @@ const Auth = () => {
           { withCredentials: true }
         );
         if (response) {
+          console.log(response.data.user._id);
           toast.success(response.data.message);
           dispatch(setUserInfo(response.data.user));
-          if (response.data.user.profileSetup) {
-            navigate('/chat');
-          } else {
-            navigate('/profile');
+          if (response.data.user._id) {
+            if (response.data.user.profileSetup) {
+              navigate('/chat');
+            } else {
+              navigate('/profile');
+            }
           }
         }
       } catch (error) {
