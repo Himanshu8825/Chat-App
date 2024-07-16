@@ -27,6 +27,7 @@ const Profile = () => {
   const [hovered, setHovered] = useState(false);
   const fileInputRef = useRef(null);
   const [image, setImage] = useState(null);
+  const [imageVersion, setImageVersion] = useState(0);
 
   useEffect(() => {
     if (userInfo && userInfo.profileSetup) {
@@ -35,11 +36,11 @@ const Profile = () => {
       setSelectedColor(userInfo.color || 0);
     }
     if (userInfo && userInfo.image) {
-      const imageUrl = `${HOST}/${userInfo.image}`;
-      console.log('Image URL:', imageUrl);
+      const imageUrl = `${HOST}/${encodeURIComponent(userInfo.image)}`;
       setImage(imageUrl);
     }
-  }, [userInfo]);
+
+  }, [userInfo, imageVersion]);
 
   const validateProfile = () => {
     if (!firstName) {
@@ -88,7 +89,6 @@ const Profile = () => {
 
   const uploadChangeHandler = async (e) => {
     const file = e.target.files[0];
-    console.log({ file });
     if (file) {
       const formData = new FormData();
       formData.append('profile-image', file);
@@ -96,21 +96,22 @@ const Profile = () => {
         const response = await apiClient.post(
           ADD_PROFILE_IMAGE_ROUTE,
           formData,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+          }
         );
-        console.log('response:', response.data.profileImage);
+
         if (response.status === 200 && response.data.profileImage) {
           dispatch(
             setUserInfo({ ...userInfo, image: response.data.profileImage })
           );
           toast.success('Profile image updated successfully');
+          const reader = new FileReader();
+          reader.onload = () => {
+            setImage(reader.result);
+          };
+          reader.readAsDataURL(file);
         }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-          setImage(reader.result);
-        };
-        reader.readAsDataURL(file);
       } catch (error) {
         console.error('Error uploading file:', error);
         toast.error('Failed to upload file');

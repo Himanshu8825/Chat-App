@@ -2,8 +2,10 @@ const User = require('../models/UserModel.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { renameSync, unlinkSync } = require('fs');
+const path = require('path');
 
-const maxAge = 3 * 24 * 60 * 60; // 3 days in seconds
+
+const maxAge = 3 * 24 * 60 * 60;
 
 const createToken = (id) => {
   return jwt.sign({ _id: id }, process.env.JWT_SECRET, { expiresIn: maxAge });
@@ -124,8 +126,13 @@ const uploadProfileImage = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'File is required' });
     }
+
     const date = Date.now();
-    let fileName = 'uploads/profiles/' + date + req.file.originalname;
+    const originalName = path.parse(req.file.originalname).name;
+    const extension = path.parse(req.file.originalname).ext;
+    const fileName = `uploads/profiles/${originalName}-${date}${extension}`;
+    console.log("fileName : " + fileName);
+
     renameSync(req.file.path, fileName);
 
     const updatedUser = await User.findByIdAndUpdate(

@@ -1,6 +1,7 @@
+import { ChatContainer, ContactContainer, EmptyContainer } from '@/Index';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Chat = () => {
@@ -14,7 +15,16 @@ const Chat = () => {
     }
   }, [userInfo, navigate]);
 
-  return <div>Chat</div>;
+  return (
+    <div className=' flex h-screen  text-white overflow-hidden'>
+      {/* <div className="px-6 py-2 mt-8 bg-slate-400 rounded-lg w-20 ml-8">
+        <Link to="/profile">Profile</Link>
+      </div> */}
+      <ContactContainer />
+      {/* <EmptyContainer /> */}
+      <ChatContainer />
+    </div>
+  );
 };
 
 export default Chat;

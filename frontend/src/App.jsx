@@ -8,17 +8,17 @@ import { GET_USER_INFO } from './utils/constant';
 
 const PrivateRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  // console.log("userInfo", userInfo);
+
   const isAuthenticated = !!userInfo;
-  // console.log("isAuthenticated", isAuthenticated);
+
   return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
 const AuthRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  // console.log("AuthRoute userInfo", userInfo);
+
   const isAuthenticated = !!userInfo;
-  // console.log("Auth Route isAuthenticated", isAuthenticated);
+
   return isAuthenticated ? <Navigate to="/chat" /> : children;
 };
 
@@ -36,7 +36,7 @@ const App = () => {
         });
 
         if (response.status === 200 && response.data.user) {
-          dispatch(setUserInfo(response.data.user)); // Update Redux state with user info upon successful retrieval
+          dispatch(setUserInfo(response.data.user));
         } else {
           dispatch(setUserInfo(undefined));
         }
@@ -49,9 +49,7 @@ const App = () => {
     };
 
     if (!userInfo) {
-      // console.log("Data nhi hai")
       getUserData();
-      // console.log("Data Aa gya")
     } else {
       dispatch(setLoading(false));
     }
@@ -82,9 +80,9 @@ const App = () => {
       <Route
         path="/profile"
         element={
-          // <PrivateRoute>
+          <PrivateRoute>
             <Profile />
-          // </PrivateRoute>
+          </PrivateRoute>
         }
       />
       <Route path="*" element={<Navigate to="/auth" />} />{' '}
