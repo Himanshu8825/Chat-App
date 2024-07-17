@@ -1,4 +1,4 @@
-import { ProfileInfo } from '@/Index';
+import { NewDm, ProfileInfo } from '@/Index';
 
 const ContactContainer = () => {
   return (
@@ -8,12 +8,13 @@ const ContactContainer = () => {
       </div>
 
       <div className="my-5">
-        <div className="flex justify-center items-center pr-10">
+        <div className="flex  items-center pr-10 justify-between">
           <Title text="Direct Message" />
+          <NewDm />
         </div>
       </div>
       <div className="my-5">
-        <div className="flex justify-center items-center pr-20">
+        <div className="flex  items-center ">
           <Title text="Channels" />
         </div>
       </div>
