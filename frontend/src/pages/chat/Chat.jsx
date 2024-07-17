@@ -22,7 +22,7 @@ const Chat = () => {
       </div> */}
       <ContactContainer />
       {/* <EmptyContainer /> */}
-      <ChatContainer />
+      {/* <ChatContainer /> */}
     </div>
   );
 };

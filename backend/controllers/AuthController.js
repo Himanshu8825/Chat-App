@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const { renameSync, unlinkSync } = require('fs');
 const path = require('path');
 
-
 const maxAge = 3 * 24 * 60 * 60;
 
 const createToken = (id) => {
@@ -131,7 +130,7 @@ const uploadProfileImage = async (req, res) => {
     const originalName = path.parse(req.file.originalname).name;
     const extension = path.parse(req.file.originalname).ext;
     const fileName = `uploads/profiles/${originalName}-${date}${extension}`;
-    console.log("fileName : " + fileName);
+    console.log('fileName : ' + fileName);
 
     renameSync(req.file.path, fileName);
 
@@ -174,6 +173,16 @@ const removeProfileImage = async (req, res) => {
   }
 };
 
+const logOutUser = async (req, res) => {
+  try {
+    res.clearCookie('JWT_TOKEN');
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error(error.message);
+    return handleErrorResponse(res, 500, 'Internal Server Error');
+  }
+};
+
 module.exports = {
   signupUser,
   loginUser,
@@ -181,4 +190,5 @@ module.exports = {
   updateProfile,
   uploadProfileImage,
   removeProfileImage,
+  logOutUser,
 };

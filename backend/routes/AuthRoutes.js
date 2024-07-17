@@ -6,6 +6,7 @@ const {
   updateProfile,
   uploadProfileImage,
   removeProfileImage,
+  logOutUser,
 } = require('../controllers/AuthController');
 const verifyToken = require('../middlewares/AuthMiddleware');
 const multer = require('multer');
@@ -25,7 +26,6 @@ userRouter.post(
   uploadProfileImage
 );
 userRouter.delete('/remove-profileImage', verifyToken, removeProfileImage);
-
-
+userRouter.post('/logout', logOutUser);
 
 module.exports = userRouter;
