@@ -2,7 +2,7 @@ import apiClient from '@/lib/api';
 import { getColor } from '@/lib/utils';
 import { setUserInfo } from '@/Redux/Slices/authSlice';
 import { HOST, LOGOUT_USER } from '@/utils/constant';
-import { Avatar } from '@radix-ui/react-avatar';
+import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,7 @@ const ProfileInfo = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.auth.userInfo);
+
 
   const logOurtHandler = async () => {
     try {
@@ -47,7 +48,7 @@ const ProfileInfo = () => {
         <div className=" w-12 h-10 relative">
           <Avatar className="h-10 w-10  rounded-full  overflow-hidden">
             {userInfo.image ? (
-              <img
+              <AvatarImage
                 src={`${HOST}/${userInfo.image}`}
                 alt="Profile"
                 className="h-full w-full object-cover"
