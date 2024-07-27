@@ -1,11 +1,12 @@
 import { ChatContainer, ContactContainer, EmptyContainer } from '@/Index';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Chat = () => {
   const userInfo = useSelector((state) => state.auth.userInfo);
+  const selectedChatType = useSelector((state) => state.chat.selectedChatType);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,13 +17,13 @@ const Chat = () => {
   }, [userInfo, navigate]);
 
   return (
-    <div className=' flex h-screen  text-white overflow-hidden'>
-      {/* <div className="px-6 py-2 mt-8 bg-slate-400 rounded-lg w-20 ml-8">
-        <Link to="/profile">Profile</Link>
-      </div> */}
+    <div className=" flex h-screen  text-white overflow-hidden">
       <ContactContainer />
-      {/* <EmptyContainer /> */}
-      {/* <ChatContainer /> */}
+      {selectedChatType === 'undefined' ? (
+        <EmptyContainer />
+      ) : (
+        <ChatContainer />
+      )}
     </div>
   );
 };

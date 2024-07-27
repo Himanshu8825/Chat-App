@@ -21,6 +21,7 @@ const chatSlice = createSlice({
       state.selectedChatMessages = action.payload;
     },
     closeChat: (state) => {
+      console.log('closeChat reducer invoked');
       state.selectedChatType = 'undefined';
       state.selectedChatData = 'undefined';
       state.selectedChatMessages = [];

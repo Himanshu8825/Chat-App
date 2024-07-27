@@ -15,18 +15,27 @@ import {
 } from '@/components/ui/tooltip';
 import apiClient from '@/lib/api';
 import { animationDefaultAnimation, getColor } from '@/lib/utils';
+import {
+  setSelectedChatData,
+  setSelectedChatType,
+} from '@/Redux/Slices/chatSlice';
 import { HOST, SEARCH_CONTACT_ROUTES } from '@/utils/constant';
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import Lottie from 'react-lottie';
+import { useDispatch, useSelector } from 'react-redux';
 
 const NewDm = () => {
   const [openNewContact, setOpenNewContact] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState([]);
+  const dispatch = useDispatch();
 
-  const searchContacts = async (searchTerm)=>{
+  const selectedChatType = useSelector((state) => state.chat.selectedChatType);
+  const selectedChatData = useSelector((state) => state.chat.selectedChatData);
+
+  const searchContacts = async (searchTerm) => {
     try {
       if (searchTerm.length > 0) {
         const response = await apiClient.post(
@@ -44,14 +53,14 @@ const NewDm = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
-
-  const selectNewCOntacts = ()=>{
-    openNewContact(false);
+  const selectNewContacts = (contact) => {
+    setOpenNewContact(false);
+    dispatch(setSelectedChatType('contact'));
+    dispatch(setSelectedChatData(contact));
     setSearchedContacts([]);
-  }
-
+  };
 
   return (
     <>
@@ -83,16 +92,16 @@ const NewDm = () => {
             />
           </div>
 
-          <ScrollArea className="h-[250px]">
+          <ScrollArea className="">
             <div className="flex flex-col gap-5">
               {searchedContacts.map((contact) => (
                 <div
                   key={contact._id}
                   className="flex items-center gap-3 cursor-pointer"
-                  onClick={()=> selectNewCOntacts(contact)}
+                  onClick={() => selectNewContacts(contact)}
                 >
-                  <div className=" w-12 h-10 relative">
-                    <Avatar className="h-10 w-10  rounded-full  overflow-hidden">
+                  <div className="w-12 h-10 relative">
+                    <Avatar className="h-10 w-10 rounded-full overflow-hidden">
                       {contact.image ? (
                         <AvatarImage
                           src={`${HOST}/${contact.image}`}
@@ -101,7 +110,7 @@ const NewDm = () => {
                         />
                       ) : (
                         <div
-                          className={`uppercase h-10 w-10  text-lg border flex items-center justify-center rounded-full  ${getColor(
+                          className={`uppercase h-10 w-10 text-lg border flex items-center justify-center rounded-full ${getColor(
                             contact.color
                           )}`}
                         >
@@ -120,7 +129,7 @@ const NewDm = () => {
                         ? `${contact.firstName} ${contact.lastName}`
                         : contact.email}
                     </span>
-                    <span className=" text-xs">{contact.email}</span>
+                    <span className="text-xs">{contact.email}</span>
                   </div>
                 </div>
               ))}
@@ -128,7 +137,7 @@ const NewDm = () => {
           </ScrollArea>
 
           {searchedContacts.length <= 0 && (
-            <div className="flex-1 md:bg-[#1c1d25] md:flex flex-col justify-center items-center duration-1000 transition-all">
+            <div className="flex-1  md:flex flex-col justify-center items-center duration-1000 transition-all">
               <Lottie
                 isClickToPauseDisabled={true}
                 height={100}
