@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const userRouter = require('./routes/AuthRoutes');
 const contactsRouter = require('./routes/ContactRouter');
+const setupSocket = require('./socket');
 
 //! Initialize Express app
 const app = express();
@@ -28,6 +29,8 @@ app.use('/api/contacts', contactsRouter);
 const port = process.env.PORT;
 const mongoDb = process.env.MONGODB_URI;
 
+
+
 //! Connect to MongoDB
 mongoose
   .connect(mongoDb)
@@ -40,6 +43,8 @@ app.get('/', (req, res) => {
 });
 
 // Start the server and listen on the specified port
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);
 });
+
+setupSocket(server)
